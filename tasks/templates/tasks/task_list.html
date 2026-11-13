@@ -1,0 +1,16 @@
+
+
+<h1>My Tasks</h1>
+
+{% for task in tasks %}
+    <h3>{{ task.title }}</h3>
+    <h3>{{task.status}}</h3>
+    <p>{{task.description}}</p>
+
+    <a href="{% url 'update_task' task.id %}">Update</a>
+<form method="POST" action="{% url 'delete_task' task.id %}">
+    {% csrf_token %}
+    <button type="submit">Delete</button>
+</form>
+{% endfor %}
+
