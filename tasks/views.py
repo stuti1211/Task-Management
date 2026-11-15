@@ -11,6 +11,8 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
+from rest_framework.decorators import authentication_classes
+from rest_framework_simplejwt.authentication import JWTAuthentication
 # Create your views here.
 
 
@@ -108,11 +110,12 @@ def api_update_task(request, id):
     return Response(serializer.errors,status=400)
 
 @api_view(['DELETE'])
-
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def api_delete_task(request,id):
-    task = get_object_or_404(Task, id=id)
+    task = get_object_or_404(Task, id=id ,user=request.user)
     task.delete()
-    return Response(status=204)
+    return Response({"message":"task deleted succesfuly"},status=200)
 
 @api_view(['PATCH'])
 def api_partial_update_task(request, id):
@@ -150,6 +153,6 @@ def api_login(request):
     refresh = RefreshToken.for_user(user)
     access  = refresh.access_token
     return Response({
-        "refresh": str(refresh),
-        "access": str(access)
-    }, status=200)
+        "refresh": str(refresh), "access": str(access)}, status=200)
+
+
