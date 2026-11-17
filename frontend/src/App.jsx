@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import CreateTask from "./CreateTask";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
+import ForgotPassword from "./ForgotPassword";
 import axios from "axios";
 
 
@@ -41,6 +42,7 @@ const handleDelete = async(id)=>{
     <Route path="/login" element={<Login setToken={setToken}/>} />
     <Route path="/dashboard" element={<Dashboard  token={token} tasks={tasks} fetchTask={fetchTask} setSelectedtask={setSelectedtask} handleDelete={handleDelete}/>} />
     <Route path="/create-task" element={<CreateTask token={token} fetchTask={fetchTask} selectedtask={selectedtask}/>} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
     </Routes>
   )
 }

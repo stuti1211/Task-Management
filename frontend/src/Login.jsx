@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import ForgotPassword from "./ForgotPassword";
 import axios from "axios";
 
 
@@ -44,7 +46,8 @@ return(
         onChange={(e)=>setPassword(e.target.value)}
        />
        <button onClick={handleLogin}>Login</button>
-    </div>
+       <Link to="/forgot-password">Forgot Password?</Link>    
+      </div>
 );
 
 
