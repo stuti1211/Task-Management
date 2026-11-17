@@ -13,6 +13,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from rest_framework.decorators import authentication_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_decode
+from django.core.mail import send_mail
 # Create your views here.
 
 
@@ -156,3 +161,37 @@ def api_login(request):
         "refresh": str(refresh), "access": str(access)}, status=200)
 
 
+@api_view(['POST'])
+
+def api_forgot_email(request):
+    email = request.data.get("email")
+
+    if not email:
+        return Response({"message":"Email is requried"}, status=400)
+
+    user = User.objects.filter(email=email).first()
+    if not user :
+        return Response({"message":"user not found"},status =404)
+    token = PasswordResetTokenGenerator().make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    reset_link = f"http://localhost:5173/reset-password/{uid}/{token}/"
+    send_mail("Reset Your password " ,
+    f"Click here to reset your password: {reset_link}",None, [email])
+    return Response( {"message": "Password reset link sent successfully"},status=200)
+
+@api_view(['POST'])
+def api_reset_password(request):
+    uid = request.data.get("uid")
+    token = request.data.get("token")
+    new_password = request.data.get("new_password")
+    if not uid  or not token or not new_password:
+        return Response( {"error": "All fields are required"}, status=400 )
+    user_id = urlsafe_base64_decode(uid).decode()  
+    user = User.objects.filter(pk=user_id).first()
+    if not user:
+        return Response({"message":"user not found"},status =404)
+    if not PasswordResetTokenGenerator().check_token(user, token):
+        return Response({"error": "Invalid or expired token"}, status=400)
+    user.set_password(new_password)
+    user.save()
+    return Response({"message":"password reset successfully"},status =200)

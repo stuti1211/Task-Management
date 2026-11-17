@@ -16,5 +16,7 @@ urlpatterns = [
   path('api/partial-update/<int:id>/', views.api_partial_update_task),
   path('api/signup/', views.api_signup, name='api_signup'),
   path('api/login/', views.api_login, name='api_login'),
+  path('api/forgot-password/', views.api_forgot_email, name='api_forgot_email'),
+  path('api/reset-password/', views.api_reset_password, name='api_reset_password'),
 ]
 
